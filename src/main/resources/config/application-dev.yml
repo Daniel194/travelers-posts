@@ -60,7 +60,7 @@ spring:
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
   data:
     mongodb:
-      uri: mongodb://localhost:27017
+      uri: mongodb://localhost:27083
       database: posts
     elasticsearch:
       properties:
