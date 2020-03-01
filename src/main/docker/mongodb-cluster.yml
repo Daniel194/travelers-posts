@@ -3,7 +3,7 @@ services:
   posts-mongodb:
     image: mongo:4.0.16
     ports:
-      - '27017:27017'
+      - '27083:27017'
     command: mongos --configdb posts-mongodb-config
   posts-mongodb-node:
     build:
