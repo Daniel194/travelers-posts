@@ -12,8 +12,8 @@ services:
       - SPRING_DATA_MONGODB_DATABASE=posts
       - JHIPSTER_CACHE_REDIS_SERVER=redis://posts-redis:6383
       - JHIPSTER_SLEEP=30 # gives time for other services to boot before the application
-      - SPRING_DATA_JEST_URI=http://posts-elasticsearch:9200
-      - SPRING_ELASTICSEARCH_REST_URIS=http://posts-elasticsearch:9200
+      - SPRING_DATA_JEST_URI=http://elasticsearch:9200
+      - SPRING_ELASTICSEARCH_REST_URIS=http://elasticsearch:9200
       - KAFKA_BOOTSTRAPSERVERS=kafka:9092
   posts-mongodb:
     extends:
@@ -23,10 +23,10 @@ services:
     extends:
       file: redis.yml
       service: posts-redis
-  posts-elasticsearch:
+  elasticsearch:
     extends:
       file: elasticsearch.yml
-      service: posts-elasticsearch
+      service: elasticsearch
   kafka:
     extends:
       file: kafka.yml
