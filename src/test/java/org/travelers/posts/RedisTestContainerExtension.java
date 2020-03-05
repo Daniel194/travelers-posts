@@ -15,9 +15,9 @@ public class RedisTestContainerExtension implements BeforeAllCallback {
         if (!started.get()) {
             GenericContainer redis =
                 new GenericContainer("redis:5.0.7")
-                    .withExposedPorts(6379);
+                    .withExposedPorts(6383);
             redis.start();
-            System.setProperty("redis.test.server", "redis://" + redis.getContainerIpAddress() + ":" + redis.getMappedPort(6379));
+            System.setProperty("redis.test.server", "redis://" + redis.getContainerIpAddress() + ":" + redis.getMappedPort(6383));
             started.set(true);
         }
     }
