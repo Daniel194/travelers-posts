@@ -8,9 +8,9 @@ services:
       - MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED=true
       - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:$${jhipster.registry.password}@jhipster-registry:8761/eureka
       - SPRING_CLOUD_CONFIG_URI=http://admin:$${jhipster.registry.password}@jhipster-registry:8761/config
-      - SPRING_DATA_MONGODB_URI=mongodb://posts-mongodb:27083
+      - SPRING_DATA_MONGODB_URI=mongodb://posts-mongodb:27017
       - SPRING_DATA_MONGODB_DATABASE=posts
-      - JHIPSTER_CACHE_REDIS_SERVER=redis://posts-redis:6383
+      - JHIPSTER_CACHE_REDIS_SERVER=redis://posts-redis:6379
       - JHIPSTER_SLEEP=30 # gives time for other services to boot before the application
       - SPRING_DATA_JEST_URI=http://elasticsearch:9200
       - SPRING_ELASTICSEARCH_REST_URIS=http://elasticsearch:9200
