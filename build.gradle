@@ -32,8 +32,8 @@ version = "0.0.1-SNAPSHOT"
 
 description = ""
 
-sourceCompatibility=1.8
-targetCompatibility=1.8
+sourceCompatibility = 11
+targetCompatibility = 11
 assert System.properties["java.specification.version"] == "1.8" || "11" || "12" || "13"
 
 apply from: "gradle/docker.gradle"
@@ -66,12 +66,6 @@ if (project.hasProperty("gae")) {
 
 if (project.hasProperty("zipkin")) {
     apply from: "gradle/zipkin.gradle"
-}
-
-idea {
-    module {
-        excludeDirs += files("node_modules")
-    }
 }
 
 eclipse {
@@ -214,7 +208,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-aop"
     implementation "org.springframework.boot:spring-boot-starter-data-elasticsearch"
     // Spring Data Jest dependencies for Elasticsearch
-    implementation ("com.github.vanroy:spring-boot-starter-data-jest") {
+    implementation("com.github.vanroy:spring-boot-starter-data-jest") {
         exclude module: "commons-logging"
     }
     // log4j2-mock needed to create embedded elasticsearch instance with SLF4J
@@ -223,7 +217,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-data-mongodb"
     implementation "org.apache.kafka:kafka-clients"
     implementation "org.springframework.boot:spring-boot-starter-security"
-    implementation ("org.springframework.boot:spring-boot-starter-web") {
+    implementation("org.springframework.boot:spring-boot-starter-web") {
         exclude module: "spring-boot-starter-tomcat"
     }
     implementation "org.springframework.boot:spring-boot-starter-undertow"
@@ -249,7 +243,7 @@ dependencies {
         implementation "io.jsonwebtoken:jjwt-jackson"
     }
     implementation "com.github.mongobee:mongobee"
-    implementation ("io.springfox:springfox-swagger2") {
+    implementation("io.springfox:springfox-swagger2") {
         exclude module: "mapstruct"
     }
     implementation "io.springfox:springfox-bean-validators"
@@ -258,7 +252,7 @@ dependencies {
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:${spring_boot_version}"
     testImplementation "io.cucumber:cucumber-junit"
     testImplementation "io.cucumber:cucumber-spring"
-    testImplementation ("org.springframework.boot:spring-boot-starter-test") {
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
     }
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.springframework.boot:spring-boot-test"
