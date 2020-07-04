@@ -10,7 +10,7 @@ Feature: Get all post
         When post already exists
 
     Scenario: Get by login
-        When a user want to see all the pots of the user 'test'
+        When a user wants to see all the pots of the user 'test'
         Then the response is 'SUCCESSFUL'
         And following posts are returned
             | id  | login | coverImageUrl     | title     | description      | startDate  | endDate    | country | rating |
@@ -18,7 +18,7 @@ Feature: Get all post
             | 500 | other | http://other2.com | PotTitle2 | PostDescription2 | 2020-04-02 | 2020-04-22 | ROM     | 5      |
 
     Scenario: Get current
-        When user 'test' is login and want to see all it's posts
+        When user 'test' is login and wants to see all its posts
         Then the response is 'SUCCESSFUL'
         And following posts are returned
             | id  | login | coverImageUrl     | title     | description      | startDate  | endDate    | country | rating |
@@ -26,7 +26,7 @@ Feature: Get all post
             | 500 | other | http://other2.com | PotTitle2 | PostDescription2 | 2020-04-02 | 2020-04-22 | ROM     | 5      |
 
     Scenario: Get by id
-        When a user want to see a post with the id 400
+        When a user wants to see a post with the id 400
         Then the response is 'SUCCESSFUL'
         And following post is returned
             | id  | login | coverImageUrl     | title     | description      | startDate  | endDate    | country | rating |

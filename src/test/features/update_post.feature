@@ -12,7 +12,7 @@ Feature: Update post
         Given user wants to update a post with the following attributes
             | id   | login   | coverImageUrl   | title   | description   | startDate   | endDate   | country   | rating   |
             | <id> | <login> | <coverImageUrl> | <title> | <description> | <startDate> | <endDate> | <country> | <rating> |
-        When user update the new post '<testCase>'
+        When user update the post '<testCase>'
         Then the update is '<expectedResult>'
         Examples:
             | testCase            | expectedResult | id  | login | coverImageUrl    | title    | description     | startDate  | endDate    | country | rating |
