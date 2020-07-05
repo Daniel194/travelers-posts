@@ -5,7 +5,6 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -17,18 +16,20 @@ import org.travelers.posts.web.rest.PostResource;
 import static org.aspectj.bridge.MessageUtil.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.travelers.posts.util.TestUtil.convertObjectToJsonBytes;
 
 public class CreatePostStepDefs extends StepDefs {
 
-    @Autowired
-    private PostRepository postRepository;
-
-    @Autowired
-    private PostResource postResource;
+    private final PostRepository postRepository;
+    private final PostResource postResource;
 
     private PostDTO postDTO;
-
     private MockMvc restUserMockMvc;
+
+    public CreatePostStepDefs(PostRepository postRepository, PostResource postResource) {
+        this.postRepository = postRepository;
+        this.postResource = postResource;
+    }
 
     @Before
     public void setup() {
@@ -41,14 +42,12 @@ public class CreatePostStepDefs extends StepDefs {
         postDTO = (PostDTO) dataTable.asList(PostDTO.class).get(0);
     }
 
-    @When("user save the new post {string}")
-    public void user_save_post(String testCase) throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-
+    @When("^user save the new post .*?")
+    public void user_save_post() throws Exception {
         actions = restUserMockMvc.perform(post("/api/post")
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(mapper.writeValueAsString(postDTO)));
+            .content(convertObjectToJsonBytes(postDTO)));
     }
 
     @Then("the save is {string}")

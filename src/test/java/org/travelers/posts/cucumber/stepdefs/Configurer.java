@@ -25,10 +25,19 @@ public class Configurer implements TypeRegistryConfigurer {
             post.setCoverImageUrl(entry.get("coverImageUrl"));
             post.setTitle(entry.get("title"));
             post.setDescription(entry.get("description"));
-            post.setStartDate(LocalDate.parse(entry.get("startDate")));
-            post.setEndDate(LocalDate.parse(entry.get("endDate")));
             post.setCountry(entry.get("country"));
-            post.setRating(Integer.parseInt(entry.get("rating")));
+
+            if (!entry.get("startDate").isEmpty()) {
+                post.setStartDate(LocalDate.parse(entry.get("startDate")));
+            }
+
+            if (!entry.get("endDate").isEmpty()) {
+                post.setEndDate(LocalDate.parse(entry.get("endDate")));
+            }
+
+            if (!entry.get("rating").isEmpty()) {
+                post.setRating(Integer.parseInt(entry.get("rating")));
+            }
 
             return post;
         }));
@@ -40,10 +49,19 @@ public class Configurer implements TypeRegistryConfigurer {
             post.setCoverImageUrl(entry.get("coverImageUrl"));
             post.setTitle(entry.get("title"));
             post.setDescription(entry.get("description"));
-            post.setStartDate(LocalDate.parse(entry.get("startDate")));
-            post.setEndDate(LocalDate.parse(entry.get("endDate")));
             post.setCountry(entry.get("country"));
-            post.setRating(Integer.parseInt(entry.get("rating")));
+
+            if (!entry.get("startDate").isEmpty()) {
+                post.setStartDate(LocalDate.parse(entry.get("startDate")));
+            }
+
+            if (!entry.get("endDate").isEmpty()) {
+                post.setEndDate(LocalDate.parse(entry.get("endDate")));
+            }
+
+            if (!entry.get("rating").isEmpty()) {
+                post.setRating(Integer.parseInt(entry.get("rating")));
+            }
 
             return post;
         }));
