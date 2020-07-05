@@ -59,7 +59,6 @@ public class PostsApp {
      * @param args the command line arguments.
      */
     public static void main(String[] args) {
-        System.setProperty("es.set.netty.runtime.available.processors", "false");
         SpringApplication app = new SpringApplication(PostsApp.class);
         DefaultProfileUtil.addDefaultProfile(app);
         Environment env = app.run(args).getEnvironment();
