@@ -5,7 +5,6 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -23,10 +22,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class GetPostStepDefs extends StepDefs {
 
-    @Autowired
-    private PostResource postResource;
+    private final PostResource postResource;
 
     private MockMvc restUserMockMvc;
+
+    public GetPostStepDefs(PostResource postResource) {
+        this.postResource = postResource;
+    }
 
     @Before
     public void setup() {
@@ -35,7 +37,7 @@ public class GetPostStepDefs extends StepDefs {
 
     @When("a user wants to see all the pots of the user {string}")
     public void user_wants_all_pots_of_user(String login) throws Exception {
-        actions = restUserMockMvc.perform(get("/api/post?login=" + login)
+        actions = restUserMockMvc.perform(get("/api/post/login/" + login)
             .accept(MediaType.APPLICATION_JSON));
     }
 
@@ -51,7 +53,7 @@ public class GetPostStepDefs extends StepDefs {
 
     @When("a user wants to see a post with the id {int}")
     public void user_wants_post_with_id(int id) throws Exception {
-        actions = restUserMockMvc.perform(get("/api/post?id=" + id)
+        actions = restUserMockMvc.perform(get("/api/post/id/" + id)
             .accept(MediaType.APPLICATION_JSON));
     }
 
@@ -91,8 +93,6 @@ public class GetPostStepDefs extends StepDefs {
             .andExpect(jsonPath("$.coverImageUrl").value(post.getCoverImageUrl()))
             .andExpect(jsonPath("$.title").value(post.getTitle()))
             .andExpect(jsonPath("$.description").value(post.getDescription()))
-            .andExpect(jsonPath("$.startDate").value(post.getStartDate()))
-            .andExpect(jsonPath("$.endDate").value(post.getEndDate()))
             .andExpect(jsonPath("$.country").value(post.getCountry()))
             .andExpect(jsonPath("$.rating").value(post.getRating()));
     }

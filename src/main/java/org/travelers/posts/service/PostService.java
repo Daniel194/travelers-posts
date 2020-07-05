@@ -2,6 +2,7 @@ package org.travelers.posts.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.undertow.util.BadRequestException;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,10 @@ import org.travelers.posts.repository.PostRepository;
 import org.travelers.posts.service.dto.CountryDTO;
 import org.travelers.posts.service.dto.PostDTO;
 import org.travelers.posts.service.mapper.PostMapper;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -43,6 +48,22 @@ public class PostService {
         producer.send(new ProducerRecord<>("add-country", objectMapper.writeValueAsString(countryDTO)));
 
         return mapper.postToPostDTO(post);
+    }
+
+    public List<PostDTO> findByLogin(String login) {
+        return repository.findByLogin(login).stream()
+            .map(PostDTO::new)
+            .collect(Collectors.toList());
+    }
+
+    public PostDTO findById(String id) throws BadRequestException {
+        Optional<Post> result = repository.findById(id);
+
+        if (result.isPresent()) {
+            return new PostDTO(result.get());
+        }
+
+        throw new BadRequestException();
     }
 
 }

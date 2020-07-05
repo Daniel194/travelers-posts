@@ -2,6 +2,7 @@ package org.travelers.posts.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.undertow.util.BadRequestException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,15 +11,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.containers.KafkaContainer;
 import org.travelers.posts.PostsApp;
 import org.travelers.posts.config.KafkaProperties;
+import org.travelers.posts.domain.Post;
 import org.travelers.posts.repository.PostRepository;
 import org.travelers.posts.service.dto.PostDTO;
 import org.travelers.posts.service.mapper.PostMapper;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.travelers.posts.util.TestUtil.getPostDTO;
+import static org.travelers.posts.util.TestUtil.*;
 
 @SpringBootTest(classes = PostsApp.class)
 public class PostServiceTestIT {
@@ -56,6 +59,32 @@ public class PostServiceTestIT {
 
         assertThat(received).isNotNull();
         assertThat(repository.findById(received.getId()).isPresent()).isTrue();
+    }
+
+    @Test
+    public void findByLogin() {
+        Post post = getPost();
+
+        repository.save(post);
+
+        List<PostDTO> receive = postService.findByLogin(post.getLogin());
+
+        assertThat(receive.size()).isEqualTo(1);
+        assertThat(areEquals(post, receive.get(0))).isTrue();
+    }
+
+    @Test
+    public void findById() throws BadRequestException {
+        String id = "test";
+        Post post = getPost();
+        post.setId(id);
+
+        repository.save(post);
+
+        PostDTO receive = postService.findById(id);
+
+        assertThat(receive).isNotNull();
+        assertThat(areEquals(post, receive)).isTrue();
     }
 
     private Map<String, String> getProducerProps() {
