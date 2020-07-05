@@ -1,6 +1,7 @@
 package org.travelers.posts.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.undertow.util.BadRequestException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,8 +17,10 @@ import org.travelers.posts.service.dto.CountryDTO;
 import org.travelers.posts.service.dto.PostDTO;
 import org.travelers.posts.service.mapper.PostMapper;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -67,6 +70,32 @@ class PostServiceTest {
         verify(postRepository).save(any(Post.class));
         verify(objectMapper).writeValueAsString(any(CountryDTO.class));
         verify(mapper).postToPostDTO(post);
+        verifyNoMoreInteractions(kafkaProperties, mapper, postRepository, objectMapper);
+    }
+
+    @Test
+    public void findByLogin() {
+        Post post = getPost();
+        String login = "test";
+
+        doReturn(Collections.singletonList(post)).when(postRepository).findByLogin(login);
+
+        postService.findByLogin(login);
+
+        verify(postRepository).findByLogin(login);
+        verifyNoMoreInteractions(kafkaProperties, mapper, postRepository, objectMapper);
+    }
+
+    @Test
+    public void findById() throws BadRequestException {
+        Post post = getPost();
+        String id = "id";
+
+        doReturn(Optional.of(post)).when(postRepository).findById(id);
+
+        postService.findById(id);
+
+        verify(postRepository).findById(id);
         verifyNoMoreInteractions(kafkaProperties, mapper, postRepository, objectMapper);
     }
 
