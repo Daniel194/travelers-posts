@@ -1,12 +1,14 @@
 package org.travelers.posts.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.undertow.util.BadRequestException;
+import javassist.tools.rmi.ObjectNotFoundException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.testcontainers.containers.KafkaContainer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.travelers.posts.PostsApp;
@@ -22,11 +24,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.travelers.posts.util.TestUtil.getPost;
 import static org.travelers.posts.util.TestUtil.getPostDTO;
 
+@WithMockUser(value = "test")
 @SpringBootTest(classes = PostsApp.class)
 class PostServiceTest {
     private static KafkaContainer kafkaContainer;
@@ -87,7 +91,7 @@ class PostServiceTest {
     }
 
     @Test
-    public void findById() throws BadRequestException {
+    public void findById() throws ObjectNotFoundException {
         Post post = getPost();
         String id = "id";
 
@@ -116,6 +120,39 @@ class PostServiceTest {
         verify(mapper).postDTOToPost(postDTO);
         verify(postRepository).save(any(Post.class));
         verify(mapper).postToPostDTO(post);
+        verifyNoMoreInteractions(kafkaProperties, mapper, postRepository, objectMapper);
+    }
+
+    @Test
+    public void deleteAuthorize() throws JsonProcessingException, ObjectNotFoundException {
+        String id = "test";
+        Post post = getPost();
+        post.setLogin(id);
+
+        doReturn(getProducerProps()).when(kafkaProperties).getProducerProps();
+        doReturn(Optional.of(post)).when(postRepository).findById(id);
+        doReturn("").when(objectMapper).writeValueAsString(any(CountryDTO.class));
+
+        postService.delete(id);
+
+        verify(kafkaProperties).getProducerProps();
+        verify(postRepository).findById(id);
+        verify(objectMapper).writeValueAsString(any(CountryDTO.class));
+        verify(postRepository).delete(post);
+        verifyNoMoreInteractions(kafkaProperties, mapper, postRepository, objectMapper);
+    }
+
+    @Test
+    public void deleteNotAuthorize() {
+        String id = "other";
+        Post post = getPost();
+        post.setLogin(id);
+
+        doReturn(Optional.of(post)).when(postRepository).findById(id);
+
+        assertThrows(AccessDeniedException.class, () -> postService.delete(id));
+
+        verify(postRepository).findById(id);
         verifyNoMoreInteractions(kafkaProperties, mapper, postRepository, objectMapper);
     }
 
