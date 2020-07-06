@@ -52,4 +52,9 @@ public class PostResource {
         }
     }
 
+    @PutMapping
+    public ResponseEntity<PostDTO> update(@Valid @RequestBody PostDTO postDTO) {
+        return ResponseEntity.ok(postService.update(postDTO));
+    }
+
 }

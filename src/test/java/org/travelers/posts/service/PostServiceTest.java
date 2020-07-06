@@ -99,6 +99,26 @@ class PostServiceTest {
         verifyNoMoreInteractions(kafkaProperties, mapper, postRepository, objectMapper);
     }
 
+    @Test
+    public void update() {
+        PostDTO postDTO = getPostDTO();
+        Post post = getPost();
+
+        postDTO.setId("test");
+        post.setId("test");
+
+        doReturn(post).when(mapper).postDTOToPost(postDTO);
+        doReturn(post).when(postRepository).save(any(Post.class));
+        doReturn(postDTO).when(mapper).postToPostDTO(post);
+
+        postService.update(postDTO);
+
+        verify(mapper).postDTOToPost(postDTO);
+        verify(postRepository).save(any(Post.class));
+        verify(mapper).postToPostDTO(post);
+        verifyNoMoreInteractions(kafkaProperties, mapper, postRepository, objectMapper);
+    }
+
     private Map<String, Object> getProducerProps() {
         Map<String, Object> producerProps = new HashMap<>();
         producerProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");

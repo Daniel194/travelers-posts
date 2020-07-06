@@ -66,4 +66,10 @@ public class PostService {
         throw new BadRequestException();
     }
 
+    public PostDTO update(PostDTO postDTO) {
+        Post post = repository.save(mapper.postDTOToPost(postDTO));
+
+        return mapper.postToPostDTO(post);
+    }
+
 }
