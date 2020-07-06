@@ -15,8 +15,7 @@ import org.travelers.posts.service.dto.PostDTO;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.travelers.posts.util.TestUtil.*;
 
@@ -89,6 +88,28 @@ class PostResourceTestIT {
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
+    }
+
+    @Test
+    public void update() throws Exception {
+        Post post = repository.save(getPost());
+
+        PostDTO postDTO = getPostDTO();
+        postDTO.setId(post.getId());
+
+        String response = restUserMockMvc.perform(put("/api/post")
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(convertObjectToJsonBytes(postDTO)))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+        PostDTO postDTOResponse = mapper.readValue(response, PostDTO.class);
+
+        assertThat(postDTOResponse.getId()).isNotNull();
+        assertThat(postDTOResponse.getId()).isEqualTo(postDTO.getId());
     }
 
 }

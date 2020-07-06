@@ -87,6 +87,17 @@ public class PostServiceTestIT {
         assertThat(areEquals(post, receive)).isTrue();
     }
 
+    @Test
+    public void update() throws JsonProcessingException {
+        PostDTO post = postService.create(getPostDTO());
+
+        post.setDescription("New Description");
+
+        PostDTO receive = postService.update(post);
+
+        assertThat(receive.getDescription()).isEqualTo(post.getDescription());
+    }
+
     private Map<String, String> getProducerProps() {
         Map<String, String> producerProps = new HashMap<>();
         producerProps.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
