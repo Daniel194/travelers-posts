@@ -1,9 +1,10 @@
 package org.travelers.posts.web.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.undertow.util.BadRequestException;
+import javassist.tools.rmi.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 import org.travelers.posts.config.Constants;
 import org.travelers.posts.security.SecurityUtils;
@@ -47,14 +48,27 @@ public class PostResource {
     public ResponseEntity<PostDTO> findAllById(@PathVariable("id") String id) {
         try {
             return ResponseEntity.ok(postService.findById(id));
-        } catch (BadRequestException e) {
-            return ResponseEntity.badRequest().build();
+        } catch (ObjectNotFoundException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 
     @PutMapping
     public ResponseEntity<PostDTO> update(@Valid @RequestBody PostDTO postDTO) {
         return ResponseEntity.ok(postService.update(postDTO));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") String id) {
+        try {
+            if (postService.delete(id)) {
+                return ResponseEntity.ok().build();
+            }
+
+            return ResponseEntity.badRequest().build();
+        } catch (ObjectNotFoundException | JsonProcessingException | AccessDeniedException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
 }

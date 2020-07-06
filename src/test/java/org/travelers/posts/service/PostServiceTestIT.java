@@ -2,12 +2,14 @@ package org.travelers.posts.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.undertow.util.BadRequestException;
+import javassist.tools.rmi.ObjectNotFoundException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.testcontainers.containers.KafkaContainer;
 import org.travelers.posts.PostsApp;
 import org.travelers.posts.config.KafkaProperties;
@@ -21,8 +23,10 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.travelers.posts.util.TestUtil.*;
 
+@WithMockUser(value = "test")
 @SpringBootTest(classes = PostsApp.class)
 public class PostServiceTestIT {
     private static KafkaContainer kafkaContainer;
@@ -74,7 +78,7 @@ public class PostServiceTestIT {
     }
 
     @Test
-    public void findById() throws BadRequestException {
+    public void findById() throws ObjectNotFoundException {
         String id = "test";
         Post post = getPost();
         post.setId(id);
@@ -96,6 +100,28 @@ public class PostServiceTestIT {
         PostDTO receive = postService.update(post);
 
         assertThat(receive.getDescription()).isEqualTo(post.getDescription());
+    }
+
+    @Test
+    public void deleteAuthorize() throws JsonProcessingException, ObjectNotFoundException {
+        Post post = getPost();
+        post.setLogin("test");
+
+        Post saved = repository.save(post);
+
+        postService.delete(saved.getId());
+
+        assertThat(repository.findById(post.getLogin()).isPresent()).isFalse();
+    }
+
+    @Test
+    public void deleteNotAuthorize() {
+        Post post = getPost();
+        post.setLogin("other");
+
+        Post saved = repository.save(post);
+
+        assertThrows(AccessDeniedException.class, () -> postService.delete(saved.getId()));
     }
 
     private Map<String, String> getProducerProps() {

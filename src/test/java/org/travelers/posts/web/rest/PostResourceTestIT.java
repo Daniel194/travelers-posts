@@ -112,4 +112,16 @@ class PostResourceTestIT {
         assertThat(postDTOResponse.getId()).isEqualTo(postDTO.getId());
     }
 
+    @Test
+    public void deletePost() throws Exception {
+        Post post = getPost();
+        post.setLogin("test");
+
+        String id = repository.save(post).getId();
+
+        restUserMockMvc.perform(delete("/api/post/" + id)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+    }
 }
