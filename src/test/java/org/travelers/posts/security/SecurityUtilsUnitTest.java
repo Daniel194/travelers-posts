@@ -13,9 +13,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Test class for the {@link SecurityUtils} utility class.
- */
 public class SecurityUtilsUnitTest {
 
     @Test

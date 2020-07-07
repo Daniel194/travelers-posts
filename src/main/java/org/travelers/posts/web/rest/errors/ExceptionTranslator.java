@@ -24,10 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Controller advice to translate the server side exceptions to client-friendly json structures.
- * The error response follows RFC7807 - Problem Details for HTTP APIs (https://tools.ietf.org/html/rfc7807).
- */
 @ControllerAdvice
 public class ExceptionTranslator implements ProblemHandling, SecurityAdviceTrait {
 
@@ -39,9 +35,6 @@ public class ExceptionTranslator implements ProblemHandling, SecurityAdviceTrait
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
-    /**
-     * Post-process the Problem payload to add the message key for the front-end if needed.
-     */
     @Override
     public ResponseEntity<Problem> process(@Nullable ResponseEntity<Problem> entity, NativeWebRequest request) {
         if (entity == null) {

@@ -10,10 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.io.Serializable;
 import java.time.Instant;
 
-/**
- * Base abstract class for entities which will hold definitions for created, last modified by and created,
- * last modified by date.
- */
+
 public abstract class AbstractAuditingEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;

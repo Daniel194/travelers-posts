@@ -33,7 +33,7 @@ import java.util.Map;
 @EnableConfigurationProperties(ElasticsearchProperties.class)
 public class ElasticsearchConfiguration {
 
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper;
 
     public ElasticsearchConfiguration(ObjectMapper mapper) {
         this.mapper = mapper;
@@ -63,7 +63,7 @@ public class ElasticsearchConfiguration {
 
     public class CustomEntityMapper implements EntityMapper {
 
-        private ObjectMapper objectMapper;
+        private final ObjectMapper objectMapper;
 
         public CustomEntityMapper(ObjectMapper objectMapper) {
             this.objectMapper = objectMapper;
