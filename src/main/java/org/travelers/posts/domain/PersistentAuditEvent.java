@@ -9,11 +9,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Persist AuditEvent managed by the Spring Boot actuator.
- *
- * @see org.springframework.boot.actuate.audit.AuditEvent
- */
+
 @Document(collection = "jhi_persistent_audit_event")
 public class PersistentAuditEvent implements Serializable {
 

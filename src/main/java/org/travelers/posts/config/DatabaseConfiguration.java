@@ -62,7 +62,6 @@ public class DatabaseConfiguration {
         Mongobee mongobee = new Mongobee(mongoClient);
         mongobee.setDbName(mongoProperties.getMongoClientDatabase());
         mongobee.setMongoTemplate(mongoTemplate);
-        // package to scan for migrations
         mongobee.setChangeLogsScanPackage("org.travelers.posts.config.dbmigrations");
         mongobee.setEnabled(true);
         return mongobee;
