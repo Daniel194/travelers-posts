@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.testcontainers.containers.KafkaContainer;
@@ -53,6 +54,9 @@ class PostServiceTest {
     @Mock
     private ObjectMapper objectMapper;
 
+    @Mock
+    private CacheManager cacheManager;
+
     @BeforeAll
     static void startServer() {
         kafkaContainer = new KafkaContainer("5.4.0");
@@ -77,9 +81,10 @@ class PostServiceTest {
         verify(mapper).postDTOToPost(postDTO);
         verify(postRepository).save(any(Post.class));
         verify(postSearchRepository).save(any(Post.class));
+        verify(cacheManager).getCache(PostRepository.POST_BY_ID_CACHE);
         verify(objectMapper).writeValueAsString(any(CountryDTO.class));
         verify(mapper).postToPostDTO(post);
-        verifyNoMoreInteractions(kafkaProperties, mapper, postSearchRepository, postRepository, objectMapper);
+        verifyNoMoreInteractions(kafkaProperties, mapper, postSearchRepository, postRepository, objectMapper, cacheManager);
     }
 
     @Test
@@ -126,8 +131,9 @@ class PostServiceTest {
         verify(mapper).postDTOToPost(postDTO);
         verify(postRepository).save(any(Post.class));
         verify(postSearchRepository).save(any(Post.class));
+        verify(cacheManager).getCache(PostRepository.POST_BY_ID_CACHE);
         verify(mapper).postToPostDTO(post);
-        verifyNoMoreInteractions(kafkaProperties, mapper, postRepository, postSearchRepository, objectMapper);
+        verifyNoMoreInteractions(kafkaProperties, mapper, postRepository, postSearchRepository, objectMapper, cacheManager);
     }
 
     @Test
@@ -147,7 +153,8 @@ class PostServiceTest {
         verify(objectMapper).writeValueAsString(any(CountryDTO.class));
         verify(postRepository).delete(post);
         verify(postSearchRepository).delete(post);
-        verifyNoMoreInteractions(kafkaProperties, mapper, postRepository, postSearchRepository, objectMapper);
+        verify(cacheManager).getCache(PostRepository.POST_BY_ID_CACHE);
+        verifyNoMoreInteractions(kafkaProperties, mapper, postRepository, postSearchRepository, objectMapper, cacheManager);
     }
 
     @Test

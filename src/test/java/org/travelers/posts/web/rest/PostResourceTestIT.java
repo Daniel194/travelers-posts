@@ -1,10 +1,12 @@
 package org.travelers.posts.web.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -32,6 +34,14 @@ class PostResourceTestIT {
 
     @Autowired
     private PostRepository repository;
+
+    @Autowired
+    private CacheManager cacheManager;
+
+    @BeforeEach
+    public void setup() {
+        cacheManager.getCache(PostRepository.POST_BY_ID_CACHE).clear();
+    }
 
     @Test
     void create() throws Exception {
@@ -84,10 +94,14 @@ class PostResourceTestIT {
 
         repository.save(post);
 
+        assertThat(cacheManager.getCache(PostRepository.POST_BY_ID_CACHE).get(post.getId())).isNull();
+
         restUserMockMvc.perform(get("/api/post/id/1")
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
+
+        assertThat(cacheManager.getCache(PostRepository.POST_BY_ID_CACHE).get(post.getId())).isNotNull();
     }
 
     @Test

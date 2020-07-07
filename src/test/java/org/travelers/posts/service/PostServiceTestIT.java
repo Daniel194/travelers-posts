@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.testcontainers.containers.KafkaContainer;
@@ -44,6 +45,9 @@ public class PostServiceTestIT {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private CacheManager cacheManager;
+
     private PostService postService;
 
     @BeforeAll
@@ -57,7 +61,7 @@ public class PostServiceTestIT {
         KafkaProperties kafkaProperties = new KafkaProperties();
         kafkaProperties.setProducer(getProducerProps());
 
-        postService = new PostService(repository, searchRepository, postMapper, objectMapper, kafkaProperties);
+        postService = new PostService(repository, searchRepository, postMapper, objectMapper, kafkaProperties, cacheManager);
     }
 
     @Test
