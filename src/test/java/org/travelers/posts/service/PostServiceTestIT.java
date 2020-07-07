@@ -15,6 +15,7 @@ import org.travelers.posts.PostsApp;
 import org.travelers.posts.config.KafkaProperties;
 import org.travelers.posts.domain.Post;
 import org.travelers.posts.repository.PostRepository;
+import org.travelers.posts.repository.search.PostSearchRepository;
 import org.travelers.posts.service.dto.PostDTO;
 import org.travelers.posts.service.mapper.PostMapper;
 
@@ -35,6 +36,9 @@ public class PostServiceTestIT {
     private PostRepository repository;
 
     @Autowired
+    private PostSearchRepository searchRepository;
+
+    @Autowired
     private PostMapper postMapper;
 
     @Autowired
@@ -53,7 +57,7 @@ public class PostServiceTestIT {
         KafkaProperties kafkaProperties = new KafkaProperties();
         kafkaProperties.setProducer(getProducerProps());
 
-        postService = new PostService(repository, postMapper, objectMapper, kafkaProperties);
+        postService = new PostService(repository, searchRepository, postMapper, objectMapper, kafkaProperties);
     }
 
     @Test
