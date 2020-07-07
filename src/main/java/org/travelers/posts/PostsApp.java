@@ -33,13 +33,6 @@ public class PostsApp {
         this.env = env;
     }
 
-    /**
-     * Initializes posts.
-     * <p>
-     * Spring profiles can be configured with a program argument --spring.profiles.active=your-active-profile
-     * <p>
-     * You can find more information on how profiles work with JHipster on <a href="https://www.jhipster.tech/profiles/">https://www.jhipster.tech/profiles/</a>.
-     */
     @PostConstruct
     public void initApplication() {
         Collection<String> activeProfiles = Arrays.asList(env.getActiveProfiles());
@@ -53,13 +46,7 @@ public class PostsApp {
         }
     }
 
-    /**
-     * Main method, used to run the application.
-     *
-     * @param args the command line arguments.
-     */
     public static void main(String[] args) {
-        System.setProperty("es.set.netty.runtime.available.processors", "false");
         SpringApplication app = new SpringApplication(PostsApp.class);
         DefaultProfileUtil.addDefaultProfile(app);
         Environment env = app.run(args).getEnvironment();
@@ -102,6 +89,6 @@ public class PostsApp {
             configServerStatus = "Not found or not setup for this application";
         }
         log.info("\n----------------------------------------------------------\n\t" +
-                "Config Server: \t{}\n----------------------------------------------------------", configServerStatus);
+            "Config Server: \t{}\n----------------------------------------------------------", configServerStatus);
     }
 }

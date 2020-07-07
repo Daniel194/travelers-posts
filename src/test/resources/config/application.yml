@@ -95,7 +95,7 @@ jhipster:
       report-frequency: 60 # in seconds
   cache:
     redis:
-      server: ${redis.test.server}
+      server: redis://localhost:6383
 kafka:
   bootstrap-servers: localhost:9092
   consumer:
