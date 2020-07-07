@@ -5,8 +5,10 @@ import javassist.tools.rmi.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.travelers.posts.config.Constants;
+import org.travelers.posts.security.AuthoritiesConstants;
 import org.travelers.posts.security.SecurityUtils;
 import org.travelers.posts.service.PostService;
 import org.travelers.posts.service.dto.PostDTO;
@@ -69,6 +71,12 @@ public class PostResource {
         } catch (ObjectNotFoundException | JsonProcessingException | AccessDeniedException e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping("/_search/posts/{query}")
+    @PreAuthorize("hasRole(\"" + AuthoritiesConstants.ADMIN + "\")")
+    public List<PostDTO> search(@PathVariable String query) {
+        return postService.search(query);
     }
 
 }

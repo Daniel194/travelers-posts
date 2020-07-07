@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.travelers.posts.config.KafkaProperties;
 import org.travelers.posts.domain.Post;
 import org.travelers.posts.repository.PostRepository;
+import org.travelers.posts.repository.search.PostSearchRepository;
 import org.travelers.posts.security.SecurityUtils;
 import org.travelers.posts.service.dto.CountryDTO;
 import org.travelers.posts.service.dto.PostDTO;
@@ -19,21 +20,27 @@ import org.travelers.posts.service.mapper.PostMapper;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 
 @Service
 public class PostService {
 
     private final PostRepository repository;
+    private final PostSearchRepository searchRepository;
     private final PostMapper mapper;
     private final ObjectMapper objectMapper;
     private final KafkaProperties kafkaProperties;
 
     @Autowired
     public PostService(PostRepository repository,
+                       PostSearchRepository searchRepository,
                        PostMapper mapper,
                        ObjectMapper objectMapper,
                        KafkaProperties kafkaProperties) {
         this.repository = repository;
+        this.searchRepository = searchRepository;
         this.mapper = mapper;
         this.objectMapper = objectMapper;
         this.kafkaProperties = kafkaProperties;
@@ -41,6 +48,8 @@ public class PostService {
 
     public PostDTO create(PostDTO postDTO) throws JsonProcessingException {
         Post post = repository.save(mapper.postDTOToPost(postDTO));
+
+        searchRepository.save(post);
 
         KafkaProducer<String, String> producer = new KafkaProducer<>(kafkaProperties.getProducerProps());
         producer.send(new ProducerRecord<>("add-country", objectMapper.writeValueAsString(getCountry(post))));
@@ -67,6 +76,8 @@ public class PostService {
     public PostDTO update(PostDTO postDTO) {
         Post post = repository.save(mapper.postDTOToPost(postDTO));
 
+        searchRepository.save(post);
+
         return mapper.postToPostDTO(post);
     }
 
@@ -79,6 +90,7 @@ public class PostService {
         }
 
         repository.delete(post);
+        searchRepository.delete(post);
 
         KafkaProducer<String, String> producer = new KafkaProducer<>(kafkaProperties.getProducerProps());
         producer.send(new ProducerRecord<>("remove-country", objectMapper.writeValueAsString(getCountry(post))));
@@ -92,6 +104,13 @@ public class PostService {
         countryDTO.setCountry(post.getCountry());
 
         return countryDTO;
+    }
+
+    public List<PostDTO> search(String query) {
+        return StreamSupport
+            .stream(searchRepository.search(queryStringQuery(query)).spliterator(), false)
+            .map(PostDTO::new)
+            .collect(Collectors.toList());
     }
 
 }

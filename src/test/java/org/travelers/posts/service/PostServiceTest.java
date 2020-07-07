@@ -15,15 +15,15 @@ import org.travelers.posts.PostsApp;
 import org.travelers.posts.config.KafkaProperties;
 import org.travelers.posts.domain.Post;
 import org.travelers.posts.repository.PostRepository;
+import org.travelers.posts.repository.search.PostSearchRepository;
 import org.travelers.posts.service.dto.CountryDTO;
 import org.travelers.posts.service.dto.PostDTO;
 import org.travelers.posts.service.mapper.PostMapper;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -40,6 +40,9 @@ class PostServiceTest {
 
     @Mock
     private PostRepository postRepository;
+
+    @Mock
+    private PostSearchRepository postSearchRepository;
 
     @Mock
     private PostMapper mapper;
@@ -64,6 +67,7 @@ class PostServiceTest {
         doReturn(getProducerProps()).when(kafkaProperties).getProducerProps();
         doReturn(post).when(mapper).postDTOToPost(postDTO);
         doReturn(post).when(postRepository).save(any(Post.class));
+        doReturn(post).when(postSearchRepository).save(any(Post.class));
         doReturn("").when(objectMapper).writeValueAsString(any(CountryDTO.class));
         doReturn(postDTO).when(mapper).postToPostDTO(post);
 
@@ -72,9 +76,10 @@ class PostServiceTest {
         verify(kafkaProperties).getProducerProps();
         verify(mapper).postDTOToPost(postDTO);
         verify(postRepository).save(any(Post.class));
+        verify(postSearchRepository).save(any(Post.class));
         verify(objectMapper).writeValueAsString(any(CountryDTO.class));
         verify(mapper).postToPostDTO(post);
-        verifyNoMoreInteractions(kafkaProperties, mapper, postRepository, objectMapper);
+        verifyNoMoreInteractions(kafkaProperties, mapper, postSearchRepository, postRepository, objectMapper);
     }
 
     @Test
@@ -113,14 +118,16 @@ class PostServiceTest {
 
         doReturn(post).when(mapper).postDTOToPost(postDTO);
         doReturn(post).when(postRepository).save(any(Post.class));
+        doReturn(post).when(postSearchRepository).save(any(Post.class));
         doReturn(postDTO).when(mapper).postToPostDTO(post);
 
         postService.update(postDTO);
 
         verify(mapper).postDTOToPost(postDTO);
         verify(postRepository).save(any(Post.class));
+        verify(postSearchRepository).save(any(Post.class));
         verify(mapper).postToPostDTO(post);
-        verifyNoMoreInteractions(kafkaProperties, mapper, postRepository, objectMapper);
+        verifyNoMoreInteractions(kafkaProperties, mapper, postRepository, postSearchRepository, objectMapper);
     }
 
     @Test
@@ -139,7 +146,8 @@ class PostServiceTest {
         verify(postRepository).findById(id);
         verify(objectMapper).writeValueAsString(any(CountryDTO.class));
         verify(postRepository).delete(post);
-        verifyNoMoreInteractions(kafkaProperties, mapper, postRepository, objectMapper);
+        verify(postSearchRepository).delete(post);
+        verifyNoMoreInteractions(kafkaProperties, mapper, postRepository, postSearchRepository, objectMapper);
     }
 
     @Test
@@ -154,6 +162,16 @@ class PostServiceTest {
 
         verify(postRepository).findById(id);
         verifyNoMoreInteractions(kafkaProperties, mapper, postRepository, objectMapper);
+    }
+
+    @Test
+    public void search() {
+        String query = "test=query";
+        List<Post> posts = Arrays.asList(getPost(), getPost(), getPost());
+
+        doReturn(posts).when(postSearchRepository).search(queryStringQuery(query));
+
+        assertThat(postService.search(query).size()).isEqualTo(posts.size());
     }
 
     private Map<String, Object> getProducerProps() {
