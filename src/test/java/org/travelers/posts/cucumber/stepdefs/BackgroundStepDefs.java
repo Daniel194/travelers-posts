@@ -4,7 +4,7 @@ import io.cucumber.datatable.DataTable;
 import io.cucumber.datatable.DataTableType;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.travelers.posts.domain.Post;
 import org.travelers.posts.repository.PostRepository;
 
@@ -12,10 +12,15 @@ import java.util.List;
 
 public class BackgroundStepDefs extends StepDefs {
 
+    private final PostRepository postRepository;
+    private final CacheManager cacheManager;
+
     private List<Post> posts;
 
-    @Autowired
-    private PostRepository postRepository;
+    public BackgroundStepDefs(PostRepository postRepository, CacheManager cacheManager) {
+        this.postRepository = postRepository;
+        this.cacheManager = cacheManager;
+    }
 
     @Given("post with the following attributes")
     public void post_with_following_attributes(DataTable dataTable) {
@@ -27,6 +32,7 @@ public class BackgroundStepDefs extends StepDefs {
     public void post_already_exists() {
         postRepository.deleteAll();
         postRepository.saveAll(posts);
+        cacheManager.getCache(PostRepository.POST_BY_ID_CACHE).clear();
     }
 
 }

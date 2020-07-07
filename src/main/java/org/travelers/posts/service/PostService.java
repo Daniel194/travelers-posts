@@ -6,6 +6,8 @@ import javassist.tools.rmi.ObjectNotFoundException;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.travelers.posts.config.KafkaProperties;
@@ -32,24 +34,28 @@ public class PostService {
     private final PostMapper mapper;
     private final ObjectMapper objectMapper;
     private final KafkaProperties kafkaProperties;
+    private final CacheManager cacheManager;
 
     @Autowired
     public PostService(PostRepository repository,
                        PostSearchRepository searchRepository,
                        PostMapper mapper,
                        ObjectMapper objectMapper,
-                       KafkaProperties kafkaProperties) {
+                       KafkaProperties kafkaProperties,
+                       CacheManager cacheManager) {
         this.repository = repository;
         this.searchRepository = searchRepository;
         this.mapper = mapper;
         this.objectMapper = objectMapper;
         this.kafkaProperties = kafkaProperties;
+        this.cacheManager = cacheManager;
     }
 
     public PostDTO create(PostDTO postDTO) throws JsonProcessingException {
         Post post = repository.save(mapper.postDTOToPost(postDTO));
 
         searchRepository.save(post);
+        clearUserCaches(post.getId());
 
         KafkaProducer<String, String> producer = new KafkaProducer<>(kafkaProperties.getProducerProps());
         producer.send(new ProducerRecord<>("add-country", objectMapper.writeValueAsString(getCountry(post))));
@@ -77,6 +83,7 @@ public class PostService {
         Post post = repository.save(mapper.postDTOToPost(postDTO));
 
         searchRepository.save(post);
+        clearUserCaches(post.getId());
 
         return mapper.postToPostDTO(post);
     }
@@ -91,6 +98,7 @@ public class PostService {
 
         repository.delete(post);
         searchRepository.delete(post);
+        clearUserCaches(post.getId());
 
         KafkaProducer<String, String> producer = new KafkaProducer<>(kafkaProperties.getProducerProps());
         producer.send(new ProducerRecord<>("remove-country", objectMapper.writeValueAsString(getCountry(post))));
@@ -111,6 +119,14 @@ public class PostService {
             .stream(searchRepository.search(queryStringQuery(query)).spliterator(), false)
             .map(PostDTO::new)
             .collect(Collectors.toList());
+    }
+
+    private void clearUserCaches(String id) {
+        Cache cache = cacheManager.getCache(PostRepository.POST_BY_ID_CACHE);
+
+        if (cache != null) {
+            cache.evict(id);
+        }
     }
 
 }
