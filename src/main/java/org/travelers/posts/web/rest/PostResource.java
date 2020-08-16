@@ -74,7 +74,6 @@ public class PostResource {
     }
 
     @GetMapping("/_search/posts/{query}")
-    @PreAuthorize("hasRole(\"" + AuthoritiesConstants.ADMIN + "\")")
     public List<PostDTO> search(@PathVariable String query) {
         return postService.search(query);
     }
