@@ -1,0 +1,41 @@
+{
+  "generator-jhipster": {
+    "promptValues": {
+      "packageName": "org.travelers.posts",
+      "nativeLanguage": "en"
+    },
+    "jhipsterVersion": "6.7.1",
+    "applicationType": "microservice",
+    "baseName": "posts",
+    "packageName": "org.travelers.posts",
+    "packageFolder": "org/travelers/posts",
+    "serverPort": "8083",
+    "authenticationType": "jwt",
+    "cacheProvider": "redis",
+    "enableHibernateCache": false,
+    "websocket": false,
+    "databaseType": "mongodb",
+    "devDatabaseType": "mongodb",
+    "prodDatabaseType": "mongodb",
+    "searchEngine": "elasticsearch",
+    "messageBroker": "kafka",
+    "serviceDiscoveryType": "eureka",
+    "buildTool": "gradle",
+    "enableSwaggerCodegen": true,
+    "jwtSecretKey": "MWJjOTY2ZjU5MmNhNjc5NDE2Njc0ZWNmODhjNTUwYWIzNjdhMzQxOTliYzlkNTZhZWY0MGVlMTg3Yzc4MjA4MzZkMTIxNjhhZjQ4MDRkODA5NThjYmVmNzZlMTQ1ZDgwYTczYjFmYzk3NmMwZjVlNjZhZmY3NDVkYjJkZjI4YTk=",
+    "embeddableLaunchScript": false,
+    "creationTimestamp": 1582058389515,
+    "testFrameworks": ["gatling", "cucumber"],
+    "jhiPrefix": "jhi",
+    "entitySuffix": "",
+    "dtoSuffix": "DTO",
+    "otherModules": [],
+    "enableTranslation": true,
+    "clientPackageManager": "npm",
+    "nativeLanguage": "en",
+    "languages": ["en", "fr"],
+    "blueprints": [],
+    "skipClient": true,
+    "skipUserManagement": true
+  }
+}
